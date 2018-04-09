@@ -1,6 +1,6 @@
 var menuItem = {
     "id": "latynsha",
-    "title": "Latynshaga audaru",
+    "title": "Latynshaga audaru (немесе керісінше)",
     "contexts": ["selection"]
 };
 

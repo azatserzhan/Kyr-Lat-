@@ -49,7 +49,7 @@
     margin-top: 9px;
     padding: 10px;
     text-align: center;
-    width: 400px;
+    width: 340px;
     height: 16px;
     display: flex;
     justify-content: center;
@@ -63,9 +63,68 @@
     background-color: #4d90fe;
 }
 
-#i-copy{
-    width: 32px;
-    height: 33px;
-    background: url(copy.jpg);
+#btn-container{
+    display: flex;
+}
+
+#copy-text{
+    width: 36px;
+    height: 36px;
+    background: url(copy.png);
     margin: 10px;
+}
+
+.hover-text{
+    visibility: hidden;
+    margin: -22px 0 0 -23px;
+    background-color: #ffffff;
+    padding: 2px;
+    color: #4d90fe;
+    width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button{
+  transition: .2s ease-in-out;
+  cursor: pointer;
+}
+.button:hover{
+  transform: scale(1.1);
+}
+.button:active{
+  transform: scale(.9);
+}
+
+#auth-box{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+#o-title{
+    font-size: 24px;
+    padding: 10px;
+}
+#author-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;    
+}
+#author-img{
+    width: 143px;
+    height: 191px;
+    background: url(author.jpg);  
+}
+#author-text-container{}
+.author-text{
+    font-size: 19px;
+    padding: 10px;
 }

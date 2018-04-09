@@ -1,6 +1,5 @@
 $(function() {
     chrome.storage.sync.get(['azat'], function(text) {
-        //alert(text.azat);
         $('#expression').val(text.azat);
         calculate();
     });
@@ -9,16 +8,75 @@ $(function() {
         var target = this;
         return target.split(search).join(replacement);
     };
+
+    var action = {
+        start: function() {
+            this.hover();
+            this.copyTextToBuffer();
+        },
+
+        hover: function() {
+            $('.hover-btn').hover(function() {
+                $('.hover-text:eq(' + $(this).attr('key') + ')').css('visibility', 'visible');
+                $('.hover-text:eq(0)').text('Көшіру');
+
+
+            });
+            $('.hover-btn').mouseleave(function() {
+                $('.hover-text:eq(' + $(this).attr('key') + ')').css('visibility', 'hidden');
+            });
+        },
+
+        copyTextToBuffer: function() {
+            function fallbackCopyTextToClipboard(text) {
+                var textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
+                try {
+                    var successful = document.execCommand('copy');
+                    var msg = successful ? 'successful' : 'unsuccessful';
+                    console.log('Fallback: Copying text command was ' + msg);
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err);
+                }
+
+                document.body.removeChild(textArea);
+            }
+
+            function copyTextToClipboard(text) {
+                if (!navigator.clipboard) {
+                    fallbackCopyTextToClipboard(text);
+                    return;
+                }
+                navigator.clipboard.writeText(text).then(function() {
+                    console.log('Async: Copying to clipboard was successful!');
+                }, function(err) {
+                    console.error('Async: Could not copy text: ', err);
+                });
+            }
+
+            var copyBobBtn = document.querySelector('#copy-text');
+
+            copyBobBtn.addEventListener('click', function(event) {
+                copyTextToClipboard( $('#result').text() );
+                $('.hover-text:eq(0)').text( 'Көшірілді' );
+            });
+        },
+    };
+    action.start();
 });
 
 var translate = {
     data: {
-        lat: ['ч', 'я', 'ю', 'ш', 'щ', 
-            
+        lat: ['ч', 'я', 'ю', 'ш', 'щ',
+
             'ә', 'і', 'ң', 'ғ', 'ү', 'ұ', 'қ', 'ө', 'һ', 'й',
             'ц', 'у', 'к', 'е', 'н', 'г', 'з', 'х',
             'ъ', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д',
-            'ж', 'э', 'с', 'м', 'и', 'т', 'ь', 'б', 
+            'ж', 'э', 'с', 'м', 'и', 'т', 'ь', 'б',
             ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
             '.', ',', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+'
         ],
@@ -28,7 +86,7 @@ var translate = {
             'á', 'і', 'ń', 'ǵ', 'ú', 'u', 'q', 'ó', 'һ', 'i',
             'ts', 'ý', 'k', 'e', 'n', 'g', 'z', 'h',
             '', 'f', 'y', 'v', 'a', 'p', 'r', 'o', 'l', 'd',
-            'j', 'e', 's', 'm', 'ı', 't', '', 'b', 
+            'j', 'e', 's', 'm', 'ı', 't', '', 'b',
             ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
             '.', ',', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+'
         ],
@@ -37,8 +95,6 @@ var translate = {
     kyrToLat: function(param) {
         var myText = param['text'];
         myText = myText.trim();
-        console.log(myText);
-
         var finalText = '';
 
         for (var i = 0; i < myText.length; i++) {
@@ -62,16 +118,24 @@ var translate = {
 
     checkLang: function(param) {
         var kyrilica = false;
-        var text = param['text'].substring(0, 1);
+        var text = param['text'];
+        text = text.trim();
         var params = param;
+        var kyrLength = 0;
+        var latLength = 0;
 
         for (var i = 0; i < translate.data.lat.length - 13; i++) {
-            if (text.toUpperCase() == translate.data.lat[i].toUpperCase()) {
-                kyrilica = true;
+            for(var j=0; j<text.length; j++){
+                if( text[j] == translate.data.lat[i]){
+                    latLength++;
+                }
+                if( text[j] == translate.data.kyr[i]){
+                    kyrLength++;
+                }
             }
         }
 
-        if (kyrilica) {
+        if (kyrLength<=latLength) {
             return translate.kyrToLat(params);
         } else {
             return translate.latToKyr(params);
@@ -84,12 +148,13 @@ var translate = {
 
     latToKyr: function(param) {
         var myText = param['text'];
-
         var temp = myText;
-        
-        translate.data.kyr.forEach(function(item, index){
-            temp = temp.replaceAll( item, translate.data.lat[index] );
-            temp = temp.replaceAll( item.toUpperCase(), translate.data.lat[index].toUpperCase() );
+
+        translate.data.kyr.forEach(function(item, index) {
+            if (item != '') {
+                temp = temp.replaceAll(item, translate.data.lat[index]);
+                temp = temp.replaceAll(item.toUpperCase(), translate.data.lat[index].toUpperCase());
+            }
         });
 
         var params = param;
@@ -115,21 +180,21 @@ function translatePage(e) {
         var translateMin = {
             data: {
                 lat: ['ч', 'я', 'ю', 'ш', 'щ',
-                    
+
                     'ә', 'і', 'ң', 'ғ', 'ү', 'ұ', 'қ', 'ө', 'һ', 'й',
                     'ц', 'у', 'к', 'е', 'н', 'г', 'з', 'х',
                     'ъ', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д',
-                    'ж', 'э', 'с', 'м', 'и', 'т', 'ь', 'б', 
+                    'ж', 'э', 'с', 'м', 'и', 'т', 'ь', 'б',
                     ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
                     '.', ',', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+'
                 ],
 
                 kyr: ['ch', 'ia', 'iý', 'sh', 'sh',
-                    
+
                     'á', 'і', 'ń', 'ǵ', 'ú', 'u', 'q', 'ó', 'һ', 'i',
                     'ts', 'ý', 'k', 'e', 'n', 'g', 'z', 'h',
-                    'ъ', 'f', 'y', 'v', 'a', 'p', 'r', 'o', 'l', 'd',
-                    'j', 'э', 's', 'm', 'ı', 't', 'ь', 'b', 
+                    '', 'f', 'y', 'v', 'a', 'p', 'r', 'o', 'l', 'd',
+                    'j', 'e', 's', 'm', 'ı', 't', '', 'b',
                     ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
                     '.', ',', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+'
                 ],
@@ -138,8 +203,6 @@ function translatePage(e) {
             kyrToLat: function(param) {
                 var myText = param['text'];
                 myText = myText.trim();
-                console.log(myText);
-
                 var finalText = '';
 
                 for (var i = 0; i < myText.length; i++) {
@@ -162,18 +225,25 @@ function translatePage(e) {
             },
 
             checkLang: function(param) {
-                console.log( 'checkLang' );
                 var kyrilica = false;
-                var text = param['text'].substring(0, 1);
+                var text = param['text'];
+                text = text.trim();
                 var params = param;
+                var kyrLength = 0;
+                var latLength = 0;
 
                 for (var i = 0; i < translateMin.data.lat.length - 13; i++) {
-                    if (text.toUpperCase() == translateMin.data.lat[i].toUpperCase()) {
-                        kyrilica = true;
+                    for(var j=0; j<text.length; j++){
+                        if( text[j] == translateMin.data.lat[i]){
+                            latLength++;
+                        }
+                        if( text[j] == translateMin.data.kyr[i]){
+                            kyrLength++;
+                        }
                     }
                 }
 
-                if (kyrilica) {
+                if (kyrLength<=latLength) {
                     return translateMin.kyrToLat(params);
                 } else {
                     return translateMin.latToKyr(params);
@@ -181,24 +251,25 @@ function translatePage(e) {
             },
 
             setText: function(param, text) {
-                try{
-                    param['out'].innerText = text;    
-                }catch(e){}
-                
+                try {
+                    param['out'].innerText = text;
+                } catch (e) {}
+
             },
 
-            latToKyr: function(param) {              
+            latToKyr: function(param) {
                 String.prototype.replaceAll = function(search, replacement) {
                     var target = this;
                     return target.split(search).join(replacement);
                 };
                 var myText = param['text'];
-
                 var temp = myText;
-                
-                translateMin.data.kyr.forEach(function(item, index){
-                    temp = temp.replaceAll( item, translateMin.data.lat[index] );
-                    temp = temp.replaceAll( item.toUpperCase(), translateMin.data.lat[index].toUpperCase() );
+
+                translateMin.data.kyr.forEach(function(item, index) {
+                    if (item != '') {
+                        temp = temp.replaceAll(item, translateMin.data.lat[index]);
+                        temp = temp.replaceAll(item.toUpperCase(), translateMin.data.lat[index].toUpperCase());
+                    }
                 });
 
                 var params = param;
@@ -209,7 +280,7 @@ function translatePage(e) {
 
 
         let elementsForTranslate = [];
-        let typeOfElem = 'div, p, a, button, font, br, strong, li, span, h1, h2, h3, h4, a';
+        let typeOfElem = 'div, a, p, button, font, br, strong, li, span, h1, h2, h3, h4, a, header, strong, blockquote, br, b, em';
 
 
 
@@ -237,8 +308,6 @@ function translatePage(e) {
             }
         }
 
-        console.log( 'elementsForTranslate: ', elementsForTranslate );
-
         elementsForTranslate.forEach(function(item, index) {
             item.classList.add('translate-kyr');
             var myText = item.innerHTML;
@@ -253,7 +322,6 @@ function translatePage(e) {
         code: '(' + modifyDOM + ')();' //argument here is a string but function.toString() returns function's code
     }, (results) => {
         //Here we have just the innerHTML and not DOM structure
-        console.log('Popup script:');
         console.log(results[0]);
     });
 }
