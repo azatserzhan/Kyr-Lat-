@@ -13,7 +13,7 @@
     margin-top: 9px;
     padding: 10px;
     text-align: center;
-    width: 400px;
+    width: 100%;
     height: 16px;
     display: flex;
     justify-content: center;
@@ -33,6 +33,8 @@
     border-style: inset;
     border-color: initial;
     border-image: initial;
+    border-radius: 6px;
+    height: 25px;
 }
 
 #result{
@@ -49,7 +51,7 @@
     margin-top: 9px;
     padding: 10px;
     text-align: center;
-    width: 340px;
+    width: 90%;
     height: 16px;
     display: flex;
     justify-content: center;

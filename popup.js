@@ -19,8 +19,6 @@ $(function() {
             $('.hover-btn').hover(function() {
                 $('.hover-text:eq(' + $(this).attr('key') + ')').css('visibility', 'visible');
                 $('.hover-text:eq(0)').text('Көшіру');
-
-
             });
             $('.hover-btn').mouseleave(function() {
                 $('.hover-text:eq(' + $(this).attr('key') + ')').css('visibility', 'hidden');
@@ -76,9 +74,7 @@ var translate = {
             'ә', 'і', 'ң', 'ғ', 'ү', 'ұ', 'қ', 'ө', 'һ', 'й',
             'ц', 'у', 'к', 'е', 'н', 'г', 'з', 'х',
             'ъ', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д',
-            'ж', 'э', 'с', 'м', 'и', 'т', 'ь', 'б',
-            ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-            '.', ',', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+'
+            'ж', 'э', 'с', 'м', 'и', 'т', 'ь', 'б'
         ],
 
         kyr: ['ch', 'ia', 'iý', 'sh', 'sh',
@@ -86,34 +82,24 @@ var translate = {
             'á', 'і', 'ń', 'ǵ', 'ú', 'u', 'q', 'ó', 'һ', 'i',
             'ts', 'ý', 'k', 'e', 'n', 'g', 'z', 'h',
             '', 'f', 'y', 'v', 'a', 'p', 'r', 'o', 'l', 'd',
-            'j', 'e', 's', 'm', 'ı', 't', '', 'b',
-            ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-            '.', ',', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+'
+            'j', 'e', 's', 'm', 'ı', 't', '', 'b'
         ],
     },
 
     kyrToLat: function(param) {
         var myText = param['text'];
-        myText = myText.trim();
-        var finalText = '';
+        var temp = myText;
 
-        for (var i = 0; i < myText.length; i++) {
-            for (var j = 0; j < translate.data.lat.length; j++) {
-                if (myText[i] == myText[i].toUpperCase()) {
-                    if (myText[i].toLowerCase() == translate.data.lat[j]) {
-                        finalText += translate.data.kyr[j].toUpperCase();
-                    }
-                } else {
-                    if (myText[i] == translate.data.lat[j]) {
-                        finalText += translate.data.kyr[j];
-                    }
-                }
+        translate.data.lat.forEach(function(item, index) {
+            if (item != '') {
+                temp = temp.replaceAll(item, translate.data.kyr[index]);
+                temp = temp.replaceAll(item.toUpperCase(), translate.data.kyr[index].toUpperCase());
             }
-        }
+        });
 
         var params = param;
-        translate.setText(params, finalText);
-        return finalText;
+        translate.setText(params, temp);
+        return temp;
     },
 
     checkLang: function(param) {
@@ -124,7 +110,7 @@ var translate = {
         var kyrLength = 0;
         var latLength = 0;
 
-        for (var i = 0; i < translate.data.lat.length - 13; i++) {
+        for (var i = 0; i < translate.data.lat.length; i++) {
             for(var j=0; j<text.length; j++){
                 if( text[j] == translate.data.lat[i]){
                     latLength++;
@@ -180,13 +166,11 @@ function translatePage(e) {
         var translateMin = {
             data: {
                 lat: ['ч', 'я', 'ю', 'ш', 'щ',
-
+                
                     'ә', 'і', 'ң', 'ғ', 'ү', 'ұ', 'қ', 'ө', 'һ', 'й',
                     'ц', 'у', 'к', 'е', 'н', 'г', 'з', 'х',
                     'ъ', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д',
-                    'ж', 'э', 'с', 'м', 'и', 'т', 'ь', 'б',
-                    ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-                    '.', ',', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+'
+                    'ж', 'э', 'с', 'м', 'и', 'т', 'ь', 'б'
                 ],
 
                 kyr: ['ch', 'ia', 'iý', 'sh', 'sh',
@@ -194,34 +178,28 @@ function translatePage(e) {
                     'á', 'і', 'ń', 'ǵ', 'ú', 'u', 'q', 'ó', 'һ', 'i',
                     'ts', 'ý', 'k', 'e', 'n', 'g', 'z', 'h',
                     '', 'f', 'y', 'v', 'a', 'p', 'r', 'o', 'l', 'd',
-                    'j', 'e', 's', 'm', 'ı', 't', '', 'b',
-                    ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-                    '.', ',', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+'
+                    'j', 'e', 's', 'm', 'ı', 't', '', 'b'
                 ],
             },
 
             kyrToLat: function(param) {
+                String.prototype.replaceAll = function(search, replacement) {
+                    var target = this;
+                    return target.split(search).join(replacement);
+                };
                 var myText = param['text'];
-                myText = myText.trim();
-                var finalText = '';
+                var temp = myText;
 
-                for (var i = 0; i < myText.length; i++) {
-                    for (var j = 0; j < translateMin.data.lat.length; j++) {
-                        if (myText[i] == myText[i].toUpperCase()) {
-                            if (myText[i].toLowerCase() == translateMin.data.lat[j]) {
-                                finalText += translateMin.data.kyr[j].toUpperCase();
-                            }
-                        } else {
-                            if (myText[i] == translateMin.data.lat[j]) {
-                                finalText += translateMin.data.kyr[j];
-                            }
-                        }
+                translateMin.data.lat.forEach(function(item, index) {
+                    if (item != '') {
+                        temp = temp.replaceAll(item, translateMin.data.kyr[index]);
+                        temp = temp.replaceAll(item.toUpperCase(), translateMin.data.kyr[index].toUpperCase());
                     }
-                }
+                });
 
                 var params = param;
-                translateMin.setText(params, finalText);
-                return finalText;
+                translateMin.setText(params, temp);
+                return temp;
             },
 
             checkLang: function(param) {
@@ -252,7 +230,8 @@ function translatePage(e) {
 
             setText: function(param, text) {
                 try {
-                    param['out'].innerText = text;
+                    param['out'].innerHTML = text;
+                    console.log('HTML')
                 } catch (e) {}
 
             },
@@ -281,9 +260,6 @@ function translatePage(e) {
 
         let elementsForTranslate = [];
         let typeOfElem = 'div, a, p, button, font, br, strong, li, span, h1, h2, h3, h4, a, header, strong, blockquote, br, b, em';
-
-
-
 
         let divs = document.body.querySelectorAll(typeOfElem);
         for (var i = divs.length - 1; i >= 0; i--) {
